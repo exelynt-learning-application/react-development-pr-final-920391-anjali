@@ -330,3 +330,51 @@ your own GitHub repository, replace YOUR_USERNAME, and successfully run
 the push commands.
 
 END OF ASSIGNMENT
+I checked your review screenshot. The main reason you received 40% is that you submitted Python code inside a `.txt` file instead of actual runnable `.py` files.
+
+To improve the score, we need to fix the actual submission structure:
+
+- Submit real Python source files, not code embedded in TXT.
+- Include working functions and unit tests.
+- Fix all syntax errors.
+- Include proper Git branches, commits and merge history.
+- Include a complete README and organized project folders.
+
+I’ll provide actual project code files, not PDF or Word. I can improve the submission against the grading criteria, but cannot guarantee an exact 96% score.
+
+
+
+13 tests passed
+
+Git branches and merges created
+
+
+
+### Download the actual project files
+
+These are real source files, not Python code pasted into a TXT document.
+
+| File                    | Download             |
+| ----------------------- | -------------------- |
+| Main Python application | task_manager.py      |
+| Completion tests        | test_completion.py   |
+| Deletion tests          | test_deletion.py     |
+| General tests           | test_task_manager.py |
+| Project documentation   | README.md            |
+| Git ignore              | .gitignore           |
+| Assignment notes        | ASSIGNMENT_NOTES.txt |
+
+### Verified results
+
+- Python syntax compilation: Passed.
+- Unit tests: 13/13 passed.
+- Git initialization: Completed.
+- Feature branches: Created.
+- Feature merges: Completed.
+- Commit history: Created.
+
+### Final step: GitHub
+
+You still need to push the project to your connected GitHub repository.
+
+Important: Submit the actual `.py` files and project folders to the repository. Do not submit only the TXT file again. This addresses the major problems in your 40% review, although the final score depends on the evaluator.
