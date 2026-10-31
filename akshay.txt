@@ -1,0 +1,332 @@
+GIT AND GITHUB PROJECT ASSIGNMENT
+
+PROJECT NAME: Python Task Manager PROJECT TYPE: Command-line application
+LANGUAGE: Python 3
+
+This project lets users add, view, complete, and delete tasks. Tasks are
+stored locally in a JSON file. It demonstrates file organization, Git
+commits, feature branches, merging, testing, and GitHub hosting.
+
+1. PROJECT FOLDER STRUCTURE
+
+python-task-manager/ |– task_manager.py |– README.md |– .gitignore |–
+requirements.txt |– tests/ | |– init.py | |– test_task_manager.py |–
+tasks.json (created automatically when the app runs)
+
+2. FILE: task_manager.py
+
+import json from pathlib import Path
+
+DATA_FILE = Path(file).with_name(“tasks.json”)
+
+def load_tasks(): “““Load tasks from JSON, or return an empty list.”“”
+if not DATA_FILE.exists(): return [] try: with DATA_FILE.open(“r”,
+encoding=“utf-8”) as file: return json.load(file) except
+(json.JSONDecodeError, OSError): return []
+
+def save_tasks(tasks): “““Save tasks to the JSON data file.”“” with
+DATA_FILE.open(“w”, encoding=“utf-8”) as file: json.dump(tasks, file,
+indent=4)
+
+def add_task(title): title = title.strip() if not title: raise
+ValueError(“Task title cannot be empty.”)
+
+    tasks = load_tasks()
+    next_id = max((task["id"] for task in tasks), default=0) + 1
+    task = {"id": next_id, "title": title, "completed": False}
+    tasks.append(task)
+    save_tasks(tasks)
+    return task
+
+def list_tasks(): return load_tasks()
+
+def complete_task(task_id): tasks = load_tasks() for task in tasks: if
+task[“id”] == task_id: task[“completed”] = True save_tasks(tasks) return
+True return False
+
+def delete_task(task_id): tasks = load_tasks() updated_tasks = [task for
+task in tasks if task[“id”] != task_id] if len(updated_tasks) ==
+len(tasks): return False save_tasks(updated_tasks) return True
+
+def display_tasks(): tasks = list_tasks() if not tasks: print(“\nNo
+tasks found.”) return
+
+    print("\\nYOUR TASKS")
+    print("----------")
+    for task in tasks:
+        status = "Completed" if task["completed"] else "Pending"
+        print(f'{task["id"]}. {task["title"]} [{status}]')
+
+def main(): while True: print(“\n===== PYTHON TASK MANAGER =====”)
+print(“1. Add task”) print(“2. View tasks”) print(“3. Complete task”)
+print(“4. Delete task”) print(“5. Exit”)
+
+        choice = input("Choose an option (1-5): ").strip()
+
+        if choice == "1":
+            try:
+                task = add_task(input("Enter task title: "))
+                print(f'Task added successfully. ID: {task["id"]}')
+            except ValueError as error:
+                print(error)
+
+        elif choice == "2":
+            display_tasks()
+
+        elif choice == "3":
+            try:
+                task_id = int(input("Enter task ID to complete: "))
+                print("Task marked as completed." if complete_task(task_id)
+                      else "Task ID not found.")
+            except ValueError:
+                print("Please enter a valid numeric task ID.")
+
+        elif choice == "4":
+            try:
+                task_id = int(input("Enter task ID to delete: "))
+                print("Task deleted successfully." if delete_task(task_id)
+                      else "Task ID not found.")
+            except ValueError:
+                print("Please enter a valid numeric task ID.")
+
+        elif choice == "5":
+            print("Thank you for using Python Task Manager!")
+            break
+        else:
+            print("Invalid option. Please choose from 1 to 5.")
+
+if name == “main”: main()
+
+3. FILE: tests/init.py
+
+Makes the tests directory a Python package.
+
+4. FILE: tests/test_task_manager.py
+
+import tempfile import unittest from pathlib import Path from
+unittest.mock import patch
+
+import task_manager
+
+class TaskManagerTests(unittest.TestCase):
+
+    def setUp(self):
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.data_file = Path(self.temp_dir.name) / "tasks.json"
+        self.patcher = patch.object(task_manager, "DATA_FILE", self.data_file)
+        self.patcher.start()
+
+    def tearDown(self):
+        self.patcher.stop()
+        self.temp_dir.cleanup()
+
+    def test_add_task(self):
+        task = task_manager.add_task("Prepare assignment")
+        self.assertEqual(task["id"], 1)
+        self.assertEqual(task["title"], "Prepare assignment")
+        self.assertFalse(task["completed"])
+
+    def test_empty_title_is_rejected(self):
+        with self.assertRaises(ValueError):
+            task_manager.add_task("   ")
+
+    def test_complete_task(self):
+        task = task_manager.add_task("Learn Git")
+        self.assertTrue(task_manager.complete_task(task["id"]))
+        self.assertTrue(task_manager.list_tasks()[0]["completed"])
+
+    def test_delete_task(self):
+        task = task_manager.add_task("Push code to GitHub")
+        self.assertTrue(task_manager.delete_task(task["id"]))
+        self.assertEqual(task_manager.list_tasks(), [])
+
+    def test_unknown_task_id(self):
+        self.assertFalse(task_manager.complete_task(999))
+        self.assertFalse(task_manager.delete_task(999))
+
+if name == “main”: unittest.main()
+
+5. FILE: requirements.txt
+
+No third-party packages are required.
+
+Python 3.8 or later is recommended.
+
+6. FILE: .gitignore
+
+pycache/ *.py[cod] .venv/ venv/ .env .DS_Store .idea/ .vscode/ .coverage
+.pytest_cache/ tasks.json
+
+7. FILE: README.md
+
+Python Task Manager
+
+A simple command-line task management application built with Python.
+Users can add tasks, view saved tasks, mark tasks as completed, and
+delete tasks. Task information is stored locally in a JSON file.
+
+Features
+
+-   Add a new task
+-   View all tasks
+-   Mark a task as completed
+-   Delete a task
+-   Automatically save tasks in JSON format
+-   Validate empty task titles and invalid task IDs
+-   Unit tests for core functionality
+
+Requirements
+
+-   Python 3.8 or later
+-   Git
+-   GitHub account for remote hosting
+
+No external Python packages are required.
+
+How to Run
+
+1.  Clone the repository:
+
+        git clone YOUR_GITHUB_REPOSITORY_URL
+
+2.  Open the project directory:
+
+        cd python-task-manager
+
+3.  Run the application:
+
+        python task_manager.py
+
+How to Use
+
+Choose an option from the menu: 1. Add task 2. View tasks 3. Complete
+task 4. Delete task 5. Exit
+
+Tasks are stored in tasks.json, which is generated automatically.
+
+Run Tests
+
+From the project root, run:
+
+    python -m unittest discover -s tests -v
+
+Git Workflow
+
+Git is used for version control. Improvements are developed on feature
+branches, tested, and merged into the main branch.
+
+Author
+
+Your Name
+
+License
+
+Created for educational purposes.
+
+8. GIT AND GITHUB WORKFLOW
+
+Run these commands from inside the python-task-manager folder.
+
+STEP 1: Initialize Git
+
+    git init
+    git branch -M main
+
+STEP 2: Commit the initial project
+
+    git add task_manager.py README.md .gitignore requirements.txt tests/
+    git commit -m "Initial commit: create Python task manager project"
+
+STEP 3: Create a feature branch for task completion
+
+    git switch -c feature/complete-task
+
+Ensure complete_task() and its test are included, then commit:
+
+    git add task_manager.py tests/test_task_manager.py
+    git commit -m "Add task completion feature and unit test"
+
+STEP 4: Create a feature branch for task deletion
+
+    git switch main
+    git switch -c feature/delete-task
+
+Ensure delete_task() and its test are included, then commit:
+
+    git add task_manager.py tests/test_task_manager.py
+    git commit -m "Add task deletion feature and unit test"
+
+STEP 5: Merge feature branches into main
+
+    git switch main
+    git merge feature/complete-task
+    git merge feature/delete-task
+
+If Git reports a merge conflict, open the reported files, resolve the
+conflicting sections, save the files, run the tests, stage the resolved
+files, and complete the merge commit.
+
+STEP 6: Run the tests
+
+    python -m unittest discover -s tests -v
+
+All five tests should pass.
+
+STEP 7: Review commit history and branches
+
+    git log --oneline --graph --all
+    git branch
+
+STEP 8: Create a new EMPTY GitHub repository
+
+Create a repository named:
+
+    python-task-manager
+
+Do not initialize it with a README because the local project already has
+one.
+
+Connect the local repository and push:
+
+    git remote add origin https://github.com/YOUR_USERNAME/python-task-manager.git
+    git push -u origin main
+    git push origin feature/complete-task
+    git push origin feature/delete-task
+
+Replace YOUR_USERNAME with your GitHub username.
+
+Verify the remote:
+
+    git remote -v
+
+9. EXPECTED COMMIT HISTORY
+
+The commit history should include meaningful commits similar to:
+
+    Initial commit: create Python task manager project
+    Add task completion feature and unit test
+    Add task deletion feature and unit test
+
+View the graph with:
+
+    git log --oneline --graph --all
+
+10. FINAL SUBMISSION CHECKLIST
+
+[ ] Project files are properly organized. [ ] Application runs using
+python task_manager.py. [ ] User can add, view, complete, and delete
+tasks. [ ] Tasks are saved in a JSON file. [ ] Unit tests pass
+successfully. [ ] Git repository is initialized. [ ] Changes are saved
+with meaningful commit messages. [ ] Feature branches are created. [ ]
+Feature branches are merged into main. [ ] README.md explains the
+project and how to run it. [ ] GitHub remote is connected. [ ] Main and
+feature branches are pushed to GitHub.
+
+IMPORTANT: This TXT file contains the source code and Git workflow
+instructions. Create the folders and files using the exact filenames
+shown above, then copy each section into its corresponding file. Run the
+commands in order. The GitHub push is complete only after you create
+your own GitHub repository, replace YOUR_USERNAME, and successfully run
+the push commands.
+
+END OF ASSIGNMENT
